@@ -1099,33 +1099,33 @@
 
         // Render match select for modal
         function renderMatchSelect() {
-            const select = document.getElementById('match-select');
-            select.innerHTML = '<option value="">-- Select a match --</option>';
+    const select = document.getElementById('match-select');
+    select.innerHTML = '<option value="">-- Select a match --</option>';
 
-            // Only show upcoming or incomplete matches
-            const upcomingMatches = allMatches.filter(match => !match.completed);
-            
-            upcomingMatches.forEach(match => {
-                const player1 = match.player1 ? players.find(p => p.id === match.player1).name : "TBD";
-                const player2 = match.player2 ? players.find(p => p.id === match.player2).name : "TBD";
-                
-                let matchName = '';
-                if (match.id <= 6) {
-                    matchName = `Group Stage: ${player1} vs ${player2}`;
-                } else if (match.id <= 8) {
-                    matchName = `Eliminator ${match.id - 6}: ${player1} vs ${player2}`;
-                } else if (match.id === 9) {
-                    matchName = `Semi Final: ${player1} vs ${player2}`;
-                } else {
-                    matchName = `Final: ${player1} vs ${player2}`;
-                }
-
-                const option = document.createElement('option');
-                option.value = match.id;
-                option.textContent = `${matchName} (${match.date})`;
-                select.appendChild(option);
-            });
+    // Only show incomplete matches
+    const incompleteMatches = allMatches.filter(match => !match.completed);
+    
+    incompleteMatches.forEach(match => {
+        const player1 = match.player1 ? players.find(p => p.id === match.player1).name : "TBD";
+        const player2 = match.player2 ? players.find(p => p.id === match.player2).name : "TBD";
+        
+        let matchName = '';
+        if (match.id <= 6) {
+            matchName = `Match ${match.id}: ${player1} vs ${player2}`;
+        } else if (match.id <= 8) {
+            matchName = `Eliminator ${match.id - 6}: ${player1} vs ${player2}`;
+        } else if (match.id === 9) {
+            matchName = `Semi Final: ${player1} vs ${player2}`;
+        } else {
+            matchName = `Final: ${player1} vs ${player2}`;
         }
+
+        const option = document.createElement('option');
+        option.value = match.id;
+        option.textContent = `${matchName} (${match.date})`;
+        select.appendChild(option);
+    });
+}
 
         // Update match result
         function updateMatchResult(matchId, result) {
