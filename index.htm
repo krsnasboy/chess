@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Masters Tournament</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .tournament-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .tournament-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+            color: var(--accent);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--light);
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .match {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .match:last-child {
+            border-bottom: none;
+        }
+
+        .player {
+            display: flex;
+            align-items: center;
+            width: 40%;
+        }
+
+        .player-name {
+            font-weight: 600;
+        }
+
+        .player-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-weight: bold;
+        }
+
+        .vs {
+            width: 20%;
+            text-align: center;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .result {
+            font-weight: bold;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .win {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .loss {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .draw {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .upcoming {
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        .bracket {
+            margin-top: 2rem;
+        }
+
+        .bracket-stage {
+            margin-bottom: 2rem;
+        }
+
+        .stage-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .bracket-matches {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .winner-badge {
+            background-color: var(--success);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .player-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--dark);
+            color: white;
+            margin-top: 3rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--success);
+            width: 0;
+            transition: width 0.5s ease;
+        }
+
+        .countdown {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Chess Masters Tournament</h1>
+        <p class="subtitle">Four players compete for the championship title</p>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('overview')">Overview</div>
+            <div class="tab" onclick="openTab('bracket')">Tournament Bracket</div>
+            <div class="tab" onclick="openTab('stats')">Player Statistics</div>
+        </div>
+
+        <div id="overview" class="tab-content active">
+            <div class="tournament-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Points Table</h2>
+                        <span class="card-icon">🏆</span>
+                    </div>
+                    <table id="points-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Points</th>
+                                <th>Wins</th>
+                                <th>Losses</th>
+                                <th>Draws</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filled by JavaScript -->
+                        </tbody>
+                    </table>
+                    <div class="progress-bar">
+                        <div class="progress" id="tournament-progress"></div>
+                    </div>
+                    <p class="countdown" id="next-match-countdown"></p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Matches</h2>
+                        <span class="card-icon">📅</span>
+                    </div>
+                    <div id="recent-matches">
+                        <!-- Filled by JavaScript -->
+                    </div>
+                    <button class="btn" onclick="openModal('add-result-modal')" style="margin-top: 1rem;">Add Match Result</button>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h2 class="card-title">Upcoming Matches</h2>
+                    <span class="card-icon">🔜</span>
+                </div>
+                <div id="upcoming-matches">
+                    <!-- Filled by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div id="bracket" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Tournament Bracket</h2>
+                    <span class="card-icon">📊</span>
+                </div>
+                <div class="bracket">
+                    <div class="bracket-stage">
+                        <h3 class="stage-title">Group Stage</h3>
+                        <div class="bracket-matches" id="group-stage-matches">
+                            <!-- Filled by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="bracket-stage">
+                        <h3 class="stage-title">Eliminators</h3>
+                        <div class="bracket-matches" id="eliminator-matches">
+                            <!-- Filled by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="bracket-stage">
+                        <h3 class="stage-title">Semi Final</h3>
+                        <div class="bracket-matches" id="semi-final-matches">
+                            <!-- Filled by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="bracket-stage">
+                        <h3 class="stage-title">Final</h3>
+                        <div class="bracket-matches" id="final-matches">
+                            <!-- Filled by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="stats" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Player Statistics</h2>
+                    <span class="card-icon">📈</span>
+                </div>
+                <div class="player-stats" id="player-stats">
+                    <!-- Filled by JavaScript -->
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h2 class="card-title">Match History</h2>
+                    <span class="card-icon">📋</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Match</th>
+                            <th>Player 1</th>
+                            <th>Player 2</th>
+                            <th>Result</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="match-history">
+                        <!-- Filled by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="add-result-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('add-result-modal')">&times;</span>
+            <h2>Add Match Result</h2>
+            <form id="add-result-form">
+                <div class="form-group">
+                    <label for="match-select">Select Match</label>
+                    <select id="match-select" required>
+                        <option value="">-- Select a match --</option>
+                        <!-- Filled by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="result-select">Result</label>
+                    <select id="result-select" required>
+                        <option value="">-- Select result --</option>
+                        <option value="player1">Player 1 Wins</option>
+                        <option value="player2">Player 2 Wins</option>
+                        <option value="draw">Draw</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('add-result-modal')">Cancel</button>
+                    <button type="submit" class="btn">Save Result</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>Chess Masters Tournament &copy; 2023 | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Tournament Data
+        const players = [
+            { id: 1, name: "Sonu Yadav", avatar: "SKY" },
+            { id: 2, name: "Binay Singh", avatar: "BS" },
+            { id: 3, name: "Bipin Yadav", avatar: "RKO" },
+            { id: 4, name: "Sonu Singh", avatar: "SF" }
+        ];
+
+        // Initialize player stats
+        let playerStats = {};
+        players.forEach(player => {
+            playerStats[player.id] = {
+                points: 0,
+                wins: 0,
+                losses: 0,
+                draws: 0,
+                matchesPlayed: 0
+            };
+        });
+
+        // Tournament matches structure
+        const tournamentMatches = {
+            groupStage: [
+                { id: 1, player1: 1, player2: 2, result: null, date: "2023-11-01", completed: false },
+                { id: 2, player1: 3, player2: 4, result: null, date: "2023-11-02", completed: false },
+                { id: 3, player1: 1, player2: 3, result: null, date: "2023-11-05", completed: false },
+                { id: 4, player1: 2, player2: 4, result: null, date: "2023-11-06", completed: false },
+                { id: 5, player1: 1, player2: 4, result: null, date: "2023-11-09", completed: false },
+                { id: 6, player1: 2, player2: 3, result: null, date: "2023-11-10", completed: false }
+            ],
+            eliminators: [
+                { id: 7, player1: null, player2: null, result: null, date: "2023-11-13", completed: false, description: "Eliminator 1" },
+                { id: 8, player1: null, player2: null, result: null, date: "2023-11-14", completed: false, description: "Eliminator 2" }
+            ],
+            semiFinal: [
+                { id: 9, player1: null, player2: null, result: null, date: "2023-11-17", completed: false }
+            ],
+            final: [
+                { id: 10, player1: null, player2: null, result: null, date: "2023-11-20", completed: false }
+            ]
+        };
+
+        // All matches combined for easy access
+        let allMatches = [
+            ...tournamentMatches.groupStage,
+            ...tournamentMatches.eliminators,
+            ...tournamentMatches.semiFinal,
+            ...tournamentMatches.final
+        ];
+
+        // DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            renderPointsTable();
+            renderRecentMatches();
+            renderUpcomingMatches();
+            renderBracket();
+            renderPlayerStats();
+            renderMatchHistory();
+            renderMatchSelect();
+            updateTournamentProgress();
+            startCountdown();
+
+            // Form submission
+            document.getElementById('add-result-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const matchId = parseInt(document.getElementById('match-select').value);
+                const result = document.getElementById('result-select').value;
+                
+                if (matchId && result) {
+                    updateMatchResult(matchId, result);
+                    closeModal('add-result-modal');
+                }
+            });
+        });
+
+        // Tab functionality
+        function openTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            document.querySelector(`.tab[onclick="openTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Modal functionality
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Render points table
+        function renderPointsTable() {
+            const tbody = document.querySelector('#points-table tbody');
+            tbody.innerHTML = '';
+
+            // Create sorted array of players by points
+            const sortedPlayers = [...players].sort((a, b) => {
+                return playerStats[b.id].points - playerStats[a.id].points;
+            });
+
+            sortedPlayers.forEach((player, index) => {
+                const stats = playerStats[player.id];
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>
+                        <div class="player">
+                            <div class="player-avatar">${player.avatar}</div>
+                            <span class="player-name">${player.name}</span>
+                        </div>
+                    </td>
+                    <td>${stats.points}</td>
+                    <td>${stats.wins}</td>
+                    <td>${stats.losses}</td>
+                    <td>${stats.draws}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        // Render recent matches
+        function renderRecentMatches() {
+            const container = document.getElementById('recent-matches');
+            container.innerHTML = '';
+
+            // Get completed matches
+            const completedMatches = allMatches
+                .filter(match => match.completed)
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 3); // Show only 3 most recent
+
+            if (completedMatches.length === 0) {
+                container.innerHTML = '<p>No matches played yet.</p>';
+                return;
+            }
+
+            completedMatches.forEach(match => {
+                const player1 = players.find(p => p.id === match.player1);
+                const player2 = players.find(p => p.id === match.player2);
+                
+                const matchElement = document.createElement('div');
+                matchElement.className = 'match';
+                
+                let resultText = '';
+                if (match.result === 'player1') {
+                    resultText = `${player1.name} won`;
+                } else if (match.result === 'player2') {
+                    resultText = `${player2.name} won`;
+                } else {
+                    resultText = 'Draw';
+                }
+
+                matchElement.innerHTML = `
+                    <div class="player">
+                        <div class="player-avatar">${player1.avatar}</div>
+                        <span class="player-name">${player1.name}</span>
+                    </div>
+                    <div class="vs">vs</div>
+                    <div class="player">
+                        <div class="player-avatar">${player2.avatar}</div>
+                        <span class="player-name">${player2.name}</span>
+                    </div>
+                    <div class="result ${match.result === 'player1' ? 'win' : match.result === 'player2' ? 'loss' : 'draw'}">
+                        ${resultText}
+                    </div>
+                `;
+
+                container.appendChild(matchElement);
+            });
+        }
+
+        // Render upcoming matches
+        function renderUpcomingMatches() {
+            const container = document.getElementById('upcoming-matches');
+            container.innerHTML = '';
+
+            // Get upcoming matches (not completed and date is today or in future)
+            const today = new Date().toISOString().split('T')[0];
+            const upcomingMatches = allMatches
+                .filter(match => !match.completed && match.date >= today)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            if (upcomingMatches.length === 0) {
+                container.innerHTML = '<p>No upcoming matches scheduled.</p>';
+                return;
+            }
+
+            upcomingMatches.forEach(match => {
+                // For knockout stages, we might not know players yet
+                let player1, player2;
+                
+                if (match.player1) {
+                    player1 = players.find(p => p.id === match.player1);
+                } else {
+                    player1 = { name: "TBD", avatar: "?" };
+                }
+                
+                if (match.player2) {
+                    player2 = players.find(p => p.id === match.player2);
+                } else {
+                    player2 = { name: "TBD", avatar: "?" };
+                }
+
+                const matchElement = document.createElement('div');
+                matchElement.className = 'match upcoming';
+                
+                matchElement.innerHTML = `
+                    <div class="player">
+                        <div class="player-avatar">${player1.avatar}</div>
+                        <span class="player-name">${player1.name}</span>
+                    </div>
+                    <div class="vs">vs</div>
+                    <div class="player">
+                        <div class="player-avatar">${player2.avatar}</div>
+                        <span class="player-name">${player2.name}</span>
+                    </div>
+                    <div>
+                        ${match.date} ${match.description ? `(${match.description})` : ''}
+                    </div>
+                `;
+
+                container.appendChild(matchElement);
+            });
+        }
+
+        // Render bracket
+        function renderBracket() {
+            renderGroupStageMatches();
+            renderEliminatorMatches();
+            renderSemiFinalMatches();
+            renderFinalMatches();
+        }
+
+        function renderGroupStageMatches() {
+            const container = document.getElementById('group-stage-matches');
+            container.innerHTML = '';
+
+            tournamentMatches.groupStage.forEach(match => {
+                const player1 = players.find(p => p.id === match.player1);
+                const player2 = players.find(p => p.id === match.player2);
+                
+                const matchElement = document.createElement('div');
+                matchElement.className = 'match';
+                
+                let resultText = '';
+                if (match.completed) {
+                    if (match.result === 'player1') {
+                        resultText = `${player1.name} won`;
+                    } else if (match.result === 'player2') {
+                        resultText = `${player2.name} won`;
+                    } else {
+                        resultText = 'Draw';
+                    }
+                } else {
+                    resultText = 'Scheduled';
+                }
+
+                matchElement.innerHTML = `
+                    <div class="player">
+                        <div class="player-avatar">${player1.avatar}</div>
+                        <span class="player-name">${player1.name} ${match.result === 'player1' ? '<span class="winner-badge">Winner</span>' : ''}</span>
+                    </div>
+                    <div class="vs">vs</div>
+                    <div class="player">
+                        <div class="player-avatar">${player2.avatar}</div>
+                        <span class="player-name">${player2.name} ${match.result === 'player2' ? '<span class="winner-badge">Winner</span>' : ''}</span>
+                    </div>
+                    <div class="result ${match.completed ? (match.result === 'player1' ? 'win' : match.result === 'player2' ? 'loss' : 'draw') : ''}">
+                        ${resultText}
+                    </div>
+                `;
+
+                container.appendChild(matchElement);
+            });
+        }
+
+        function renderEliminatorMatches() {
+            const container = document.getElementById('eliminator-matches');
+            container.innerHTML = '';
+
+            tournamentMatches.eliminators.forEach(match => {
+                // For eliminators, players are determined by group stage results
+                let player1, player2;
+                
+                if (match.player1) {
+                    player1 = players.find(p => p.id === match.player1);
+                } else {
+                    player1 = { name: "3rd Place", avatar: "3" };
+                }
+                
+                if (match.player2) {
+                    player2 = players.find(p => p.id === match.player2);
+                } else {
+                    player2 = { name: "4th Place", avatar: "4" };
+                }
+
+                const matchElement = document.createElement('div');
+                matchElement.className = 'match';
+                
+                let resultText = '';
+                if (match.completed) {
+                    if (match.result === 'player1') {
+                        resultText = `${player1.name} won`;
+                    } else if (match.result === 'player2') {
+                        resultText = `${player2.name} won`;
+                    } else {
+                        resultText = 'Draw';
+                    }
+                } else {
+                    resultText = 'Scheduled';
+                }
+
+                matchElement.innerHTML = `
+                    <div class="player">
+                        <div class="player-avatar">${player1.avatar}</div>
+                        <span class="player-name">${player1.name} ${match.result === 'player1' ? '<span class="winner-badge">Winner</span>' : ''}</span>
+                    </div>
+                    <div class="vs">vs</div>
+                    <div class="player">
+                        <div class="player-avatar">${player2.avatar}</div>
+                        <span class="player-name">${player2.name} ${match.result === 'player2' ? '<span class="winner-badge">Winner</span>' : ''}</span>
+                    </div>
+                    <div class="result ${match.completed ? (match.result === 'player1' ? 'win' : match.result === 'player2' ? 'loss' : 'draw') : ''}">
+                        ${resultText} ${match.description ? `(${match.description})` : ''}
+                    </div>
+                `;
+
+                container.appendChild(matchElement);
+            });
+        }
+
+        function renderSemiFinalMatches() {
+            const container = document.getElementById('semi-final-matches');
+            container.innerHTML = '';
+
+            tournamentMatches.semiFinal.forEach(match => {
+                // For semi-final, players are top 2 from group stage
+                let player1, player2;
+                
+                if (match.player1) {
+                    player1 = players.find(p => p.id === match.player1);
+                } else {
+                    player1 = { name: "1st Place", avatar: "1" };
+                }
+                
+                if (match.player2) {
+                    player2 = players.find(p => p.id === match.player2);
+                } else {
+                    player2 = { name: "2nd Place", avatar: "2" };
+                }
+
+                const matchElement = document.createElement('div');
+                matchElement.className = 'match';
+                
+                let resultText = '';
+                if (match.completed) {
+                    if (match.result === 'player1') {
+                        resultText = `${player1.name} won`;
+                    } else if (match.result === 'player2') {
+                        resultText = `${player2.name} won`;
+                    } else {
+                        resultText = 'Draw';
+                    }
+                } else {
+                    resultText = 'Scheduled';
+                }
+
+                matchElement.innerHTML = `
+                    <div class="player">
+                        <div class="player-avatar">${player1.avatar}</div>
+                        <span class="player-name">${player1.name} ${match.result === 'player1' ? '<span class="winner-badge">Winner</span>' : ''}</span>
+                    </div>
+                    <div class="vs">vs</div>
+                    <div class="player">
+                        <div class="player-avatar">${player2.avatar}</div>
+                        <span class="player-name">${player2.name} ${match.result === 'player2' ? '<span class="winner-badge">Winner</span>' : ''}</span>
+                    </div>
+                    <div class="result ${match.completed ? (match.result === 'player1' ? 'win' : match.result === 'player2' ? 'loss' : 'draw') : ''}">
+                        ${resultText}
+                    </div>
+                `;
+
+                container.appendChild(matchElement);
+            });
+        }
+
+        function renderFinalMatches() {
+            const container = document.getElementById('final-matches');
+            container.innerHTML = '';
+
+            tournamentMatches.final.forEach(match => {
+                // For final, players are winners from semi-final
+                let player1, player2;
+                
+                if (match.player1) {
+                    player1 = players.find(p => p.id === match.player1);
+                } else {
+                    player1 = { name: "Semi-Final Winner", avatar: "SF1" };
+                }
+                
+                if (match.player2) {
+                    player2 = players.find(p => p.id === match.player2);
+                } else {
+                    player2 = { name: "Semi-Final Winner", avatar: "SF2" };
+                }
+
+                const matchElement = document.createElement('div');
+                matchElement.className = 'match';
+                
+                let resultText = '';
+                if (match.completed) {
+                    if (match.result === 'player1') {
+                        resultText = `${player1.name} won`;
+                    } else if (match.result === 'player2') {
+                        resultText = `${player2.name} won`;
+                    } else {
+                        resultText = 'Draw';
+                    }
+                } else {
+                    resultText = 'Scheduled';
+                }
+
+                matchElement.innerHTML = `
+                    <div class="player">
+                        <div class="player-avatar">${player1.avatar}</div>
+                        <span class="player-name">${player1.name} ${match.result === 'player1' ? '<span class="winner-badge">Champion</span>' : ''}</span>
+                    </div>
+                    <div class="vs">vs</div>
+                    <div class="player">
+                        <div class="player-avatar">${player2.avatar}</div>
+                        <span class="player-name">${player2.name} ${match.result === 'player2' ? '<span class="winner-badge">Champion</span>' : ''}</span>
+                    </div>
+                    <div class="result ${match.completed ? (match.result === 'player1' ? 'win' : match.result === 'player2' ? 'loss' : 'draw') : ''}">
+                        ${resultText}
+                    </div>
+                `;
+
+                container.appendChild(matchElement);
+            });
+        }
+
+        // Render player stats
+        function renderPlayerStats() {
+            const container = document.getElementById('player-stats');
+            container.innerHTML = '';
+
+            players.forEach(player => {
+                const stats = playerStats[player.id];
+                
+                const statCard = document.createElement('div');
+                statCard.className = 'stat-card';
+                
+                statCard.innerHTML = `
+                    <h3>${player.name}</h3>
+                    <div class="stat-value">${stats.points}</div>
+                    <div class="stat-label">Points</div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+                        <div>
+                            <div class="stat-value">${stats.wins}</div>
+                            <div class="stat-label">Wins</div>
+                        </div>
+                        <div>
+                            <div class="stat-value">${stats.losses}</div>
+                            <div class="stat-label">Losses</div>
+                        </div>
+                        <div>
+                            <div class="stat-value">${stats.draws}</div>
+                            <div class="stat-label">Draws</div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(statCard);
+            });
+        }
+
+        // Render match history
+        function renderMatchHistory() {
+            const tbody = document.querySelector('#match-history');
+            tbody.innerHTML = '';
+
+            // Sort matches by date (newest first)
+            const sortedMatches = [...allMatches].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sortedMatches.forEach(match => {
+                const player1 = match.player1 ? players.find(p => p.id === match.player1) : { name: "TBD" };
+                const player2 = match.player2 ? players.find(p => p.id === match.player2) : { name: "TBD" };
+                
+                let result = '';
+                if (match.completed) {
+                    if (match.result === 'player1') {
+                        result = `${player1.name} won`;
+                    } else if (match.result === 'player2') {
+                        result = `${player2.name} won`;
+                    } else {
+                        result = 'Draw';
+                    }
+                } else {
+                    result = 'Upcoming';
+                }
+
+                const row = document.createElement('tr');
+                
+                let matchName = '';
+                if (match.id <= 6) {
+                    matchName = `Group Stage Match ${match.id}`;
+                } else if (match.id <= 8) {
+                    matchName = `Eliminator ${match.id - 6}`;
+                } else if (match.id === 9) {
+                    matchName = 'Semi Final';
+                } else {
+                    matchName = 'Final';
+                }
+
+                row.innerHTML = `
+                    <td>${matchName}</td>
+                    <td>${player1.name}</td>
+                    <td>${player2.name}</td>
+                    <td>${result}</td>
+                    <td>${match.date}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        // Render match select for modal
+        function renderMatchSelect() {
+            const select = document.getElementById('match-select');
+            select.innerHTML = '<option value="">-- Select a match --</option>';
+
+            // Only show upcoming or incomplete matches
+            const upcomingMatches = allMatches.filter(match => !match.completed);
+            
+            upcomingMatches.forEach(match => {
+                const player1 = match.player1 ? players.find(p => p.id === match.player1).name : "TBD";
+                const player2 = match.player2 ? players.find(p => p.id === match.player2).name : "TBD";
+                
+                let matchName = '';
+                if (match.id <= 6) {
+                    matchName = `Group Stage: ${player1} vs ${player2}`;
+                } else if (match.id <= 8) {
+                    matchName = `Eliminator ${match.id - 6}: ${player1} vs ${player2}`;
+                } else if (match.id === 9) {
+                    matchName = `Semi Final: ${player1} vs ${player2}`;
+                } else {
+                    matchName = `Final: ${player1} vs ${player2}`;
+                }
+
+                const option = document.createElement('option');
+                option.value = match.id;
+                option.textContent = `${matchName} (${match.date})`;
+                select.appendChild(option);
+            });
+        }
+
+        // Update match result
+        function updateMatchResult(matchId, result) {
+            const match = allMatches.find(m => m.id === matchId);
+            
+            if (!match) return;
+            
+            // Update match result
+            match.result = result;
+            match.completed = true;
+            
+            // Update player stats
+            if (result === 'player1') {
+                playerStats[match.player1].points += 1;
+                playerStats[match.player1].wins += 1;
+                playerStats[match.player2].losses += 1;
+            } else if (result === 'player2') {
+                playerStats[match.player2].points += 1;
+                playerStats[match.player2].wins += 1;
+                playerStats[match.player1].losses += 1;
+            } else {
+                playerStats[match.player1].points += 0.5;
+                playerStats[match.player2].points += 0.5;
+                playerStats[match.player1].draws += 1;
+                playerStats[match.player2].draws += 1;
+            }
+            
+            playerStats[match.player1].matchesPlayed += 1;
+            playerStats[match.player2].matchesPlayed += 1;
+            
+            // For knockout stages, determine next matches
+            if (matchId <= 6) {
+                // Group stage match - check if all group matches are done
+                const allGroupMatchesCompleted = tournamentMatches.groupStage.every(m => m.completed);
+                
+                if (allGroupMatchesCompleted) {
+                    // Determine rankings
+                    const sortedPlayers = [...players].sort((a, b) => {
+                        return playerStats[b.id].points - playerStats[a.id].points;
+                    });
+                    
+                    // Update eliminator matches (3rd vs 4th)
+                    tournamentMatches.eliminators[0].player1 = sortedPlayers[2].id; // 3rd place
+                    tournamentMatches.eliminators[0].player2 = sortedPlayers[3].id; // 4th place
+                    
+                    // Update semi-final matches (1st vs 2nd)
+                    tournamentMatches.semiFinal[0].player1 = sortedPlayers[0].id; // 1st place
+                    tournamentMatches.semiFinal[0].player2 = sortedPlayers[1].id; // 2nd place
+                }
+            } else if (matchId === 7 || matchId === 8) {
+                // Eliminator matches - these don't affect the bracket further in this simple example
+            } else if (matchId === 9) {
+                // Semi-final - winner goes to final
+                if (result === 'player1') {
+                    tournamentMatches.final[0].player1 = match.player1;
+                } else if (result === 'player2') {
+                    tournamentMatches.final[0].player1 = match.player2;
+                }
+            }
+            
+            // Update all views
+            renderPointsTable();
+            renderRecentMatches();
+            renderUpcomingMatches();
+            renderBracket();
+            renderPlayerStats();
+            renderMatchHistory();
+            renderMatchSelect();
+            updateTournamentProgress();
+        }
+
+        // Update tournament progress
+        function updateTournamentProgress() {
+            const completedMatches = allMatches.filter(match => match.completed).length;
+            const totalMatches = allMatches.length;
+            const progress = (completedMatches / totalMatches) * 100;
+            
+            document.getElementById('tournament-progress').style.width = `${progress}%`;
+        }
+
+        // Countdown to next match
+        function startCountdown() {
+            const countdownElement = document.getElementById('next-match-countdown');
+            
+            // Find the next upcoming match
+            const today = new Date().toISOString().split('T')[0];
+            const upcomingMatches = allMatches
+                .filter(match => !match.completed && match.date >= today)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            if (upcomingMatches.length === 0) {
+                countdownElement.textContent = "Tournament completed!";
+                return;
+            }
+            
+            const nextMatch = upcomingMatches[0];
+            const nextMatchDate = new Date(nextMatch.date);
+            
+            function updateCountdown() {
+                const now = new Date();
+                const diff = nextMatchDate - now;
+                
+                if (diff <= 0) {
+                    countdownElement.textContent = "Match is happening today!";
+                    return;
+                }
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                
+                countdownElement.textContent = `Next match in ${days}d ${hours}h ${minutes}m`;
+            }
+            
+            updateCountdown();
+            setInterval(updateCountdown, 60000); // Update every minute
+        }
+
+        // Simulate some initial matches for demo purposes
+        function simulateInitialMatches() {
+            // Update some group stage matches
+            updateMatchResult(1, 'player1');
+            updateMatchResult(2, 'player2');
+            updateMatchResult(3, 'draw');
+        }
+
+        // Uncomment to simulate some initial matches
+        // simulateInitialMatches();
+    </script>
+</body>
+</html>
